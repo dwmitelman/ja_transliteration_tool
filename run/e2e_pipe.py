@@ -374,7 +374,7 @@ class SpellingMistakeDetector(InPipeline):
 
 
 class Export(PostPipeline):
-    CREDENTIALS_JSON = "../global_def/docx-read-7b56daaf11c4.json"
+    CREDENTIALS_JSON = "global_def/docx-read-7b56daaf11c4.json"
 
     _out: str
     _global_start_time: datetime

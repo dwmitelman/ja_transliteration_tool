@@ -1,4 +1,4 @@
-from friedberg.run.e2e_pipe import Import, PipelineManager
+from ja_transliteration_tool.run.e2e_pipe import Import, PipelineManager
 
 initial_input = Import()
 # initial_input.by_list_str(text)

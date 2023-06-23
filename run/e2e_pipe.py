@@ -16,7 +16,7 @@ from googleapiclient.http import MediaFileUpload
 import requests
 import re
 
-from friedberg.run.borrow_detect.borrow import FreqComparator
+from ja_transliteration_tool.run.borrow_detect.borrow import FreqComparator
 
 AR_LABEL = "B-JA"
 text = [
@@ -374,7 +374,7 @@ class SpellingMistakeDetector(InPipeline):
 
 
 class Export(PostPipeline):
-    CREDENTIALS_JSON = "docx-read-7b56daaf11c4.json"
+    CREDENTIALS_JSON = "../global_def/docx-read-7b56daaf11c4.json"
 
     _out: str
     _global_start_time: datetime
@@ -386,7 +386,6 @@ class Export(PostPipeline):
         self._global_start_time = kwargs["global_start_time"]
 
         self._create_docx()
-
 
     def _create_gdoc(self):
         credentials = service_account.Credentials.from_service_account_file(

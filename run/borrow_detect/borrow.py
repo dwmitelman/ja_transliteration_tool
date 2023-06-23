@@ -1,9 +1,9 @@
 import pandas as pd
 from typing import Optional, Tuple, List, Dict, Set
 from enum import Enum
-from friedberg.pre_train.aligner.transliterate import Ja2Ar
+from ja_transliteration_tool.pre_train.aligner.transliterate import Ja2Ar
 
-MAIN_PATH = "~/PycharmProjects/NLP/friedberg/run/borrow_detect/"
+MAIN_PATH = "../borrow_detect/"
 CORPUS_PATH = MAIN_PATH + "corpora/"
 
 

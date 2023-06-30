@@ -492,7 +492,7 @@ class Export(PostPipeline):
             row_cells = table.add_row().cells
             row_cells[0].text = ' '.join(word.processed_word for word in line)
             row_cells[1].text = ' '.join(word.original_word for word in line)
-            row_cells[2].text = str(i)
+            row_cells[2].text = str(i+1)
 
         for i, row in enumerate(table.rows):
             for cell in row.cells:

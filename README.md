@@ -1,4 +1,7 @@
 # Judeo Arabic: Transliteration tool
+## [Read our paper!](https://aclanthology.org/2024.findings-eacl.102/)
+
+### Manual
 
 In order to use this tool, we would suggest you running the following commands. It is highly recommended to use a simple environment, such as Google Colab.
 
@@ -23,7 +26,7 @@ In order to use this tool, we would suggest you running the following commands. 
 ### Relevant imports (run only once)
 ```
 #@title Relevant imports (run only once)
-from ja_transliteration_tool.run.e2e_pipe import Import, PipelineManager
+from run.e2e_pipe import Import, PipelineManager
 ```
 
 ### Input
@@ -44,15 +47,48 @@ text = [
     "עלי צאחבה בחג̇ה מן אלקיאס ויקבלהא ויחתג̇ הד̇א",
     "עלי הד̇א באלאחרי ואלאג̇דר ולא ינכרה ופי קול"
 ]
-initial_input.by_list_str(text)
-# initial_input.by_str("אנא אסכן פי תל אביב")
-# initial_input.by_docx_path("https://docs.google.com/document/d/19DXvJpUDb5OT8Sj_KnhwUZXbtdlCne4CNMHMhOja6Lw/edit?usp=sharing")
+
+str_text = " ".join("""
+ראובן הד'א אלמזבח והו קולהם לא לעולה
+ולא לזבח כי עד ה' ביננו וביניכם. וקאלו
+מחר יאמרו בניכם לבנינו לאמר מה לכם
+ולה' אלהי ישראל כלומר מה לכם להקריב
+קרבנות על מזבחו ונכרים אתם. חלילה לנו
+ממנו למרוד בה', תקדירה חלילה לנו וחוץ
+ממנו למרוד בה', אי חאשאנא נחן ען ד'לך,
+בל אלכ'ארג ענא הו ג'ירנא יפעלה. אז
+""".split("\n"))
+
+link = "https://docs.google.com/document/d/19DXvJpUDb5OT8Sj_KnhwUZXbtdlCne4CNMHMhOja6Lw/edit?usp=sharing"
+
+
+# initial_input.by_list_str(text)
+initial_input.by_str(str_text)
+# initial_input.by_docx_path(link)
 ```
 
 ### Converting the JA to AR
 ```
 %%capture
 #@title Converting the JA to AR
-pm = PipelineManager(initial_input.output())
-print(f"Your transliteration is ready! Please visit: {pm.output()}")
+
+# output_format = "by_list_str"
+output_format = "by_docx_path"
+pm = PipelineManager(initial_input.output(), output_format=output_format)
+```
+
+
+### Results
+```
+if output_format == "by_list_str":
+    print("Your transliteration is ready! Here are the results:")
+    for sentence in pm.output():
+        print("JA input: ")
+        print(sentence[0])
+        print("Transliterated output: ")
+        print(sentence[1])
+        print()
+
+elif output_format == "by_docx_path":
+    print(f"Your transliteration is ready! Please visit: {pm.output()}")
 ```

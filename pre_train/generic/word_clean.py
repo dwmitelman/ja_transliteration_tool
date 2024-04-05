@@ -1,6 +1,6 @@
 import pyarabic.araby as araby
 
-from ja_transliteration_tool.pre_train.generic.const import *
+from pre_train.generic.const import *
 
 
 class WordClean(object):

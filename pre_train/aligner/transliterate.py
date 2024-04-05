@@ -1,7 +1,7 @@
 import itertools
 
-from ja_transliteration_tool.pre_train.generic.const import *
-from ja_transliteration_tool.pre_train.generic.word_clean import Ja
+from pre_train.generic.const import *
+from pre_train.generic.word_clean import Ja
 
 
 class L(object):

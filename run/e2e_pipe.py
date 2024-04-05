@@ -16,7 +16,7 @@ from googleapiclient.http import MediaFileUpload
 import requests
 import re
 
-from ja_transliteration_tool.run.borrow_detect.borrow import FreqComparator
+from run.borrow_detect.borrow import FreqComparator
 
 AR_LABEL = "B-JA"
 text = [
@@ -374,7 +374,11 @@ class SpellingMistakeDetector(InPipeline):
 
 
 class Export(PostPipeline):
-    CREDENTIALS_JSON = "global_def/docx-read-7b56daaf11c4.json"
+    CREDENTIALS_JSON = "~/ja_transliteration_tool/global_def/docx-read-7b56daaf11c4.json"
+    LEGAL_OUTPUT_FORMATS = [
+        "by_docx_path",
+        "by_list_str"
+    ]
 
     _out: str
     _global_start_time: datetime
@@ -383,89 +387,27 @@ class Export(PostPipeline):
         super().__init__(inp)
         if "global_start_time" not in kwargs:
             raise KeyError("global_start_time hasn't been passed to Export task")
+        if "output_format" not in kwargs:
+            raise KeyError("output_format hasn't been passed to Export task")
+
         self._global_start_time = kwargs["global_start_time"]
+        self._output_format = kwargs["output_format"]
 
-        self._create_docx()
+        if self._output_format == "by_docx_path":
+            self._out = self._create_docx()
+        if self._output_format == "by_list_str":
+            self._out = self._create_list()
+        else:
+            raise KeyError(f"output_format {self._output_format} not legal, options: {self.LEGAL_OUTPUT_FORMATS}")
 
-    def _create_gdoc(self):
-        credentials = service_account.Credentials.from_service_account_file(
-            self.CREDENTIALS_JSON,
-            scopes=['https://www.googleapis.com/auth/documents']
-        )
-        service = build('docs', 'v1', credentials=credentials)
-
-        document = service.documents().create().execute()
-        document_id = document['documentId']
-
-        # Add a header line
-        requests_list = [
-            {
-                'insertText': {
-                    'location': {
-                        'index': 1,
-                    },
-                    'text': "Judeo-Arabic Transliterator" + '\n',
-                },
-            },
+    def _create_list(self):
+        return [
+            (
+                ' '.join([word.original_word for word in sentence]),
+                ' '.join([word.processed_word for word in sentence])
+            )
+            for sentence in self._in
         ]
-
-        # Insert a table
-        table_rows = [
-            ['Header 1', 'Header 2', 'Header 3'],
-            ['Value 1', 'Value 2', 'Value 3'],
-        ]
-        requests_list.append(
-            {
-                'insertTable': {
-                    'rows': len(table_rows),
-                    'columns': len(table_rows[0]),
-                    'location': {
-                        'index': len(header_line) + 2,  # Index after the header line
-                    },
-                },
-            }
-        )
-
-        # Add simple text
-        text = 'This is a simple text.'
-        requests_list.append(
-            {
-                'insertText': {
-                    'location': {
-                        'index': len(header_line) + len(table_rows) + 4,  # Index after header, table, and empty line
-                    },
-                    'text': text + '\n',
-                },
-            }
-        )
-
-        # Execute the requests to update the document
-        result = service.documents().batchUpdate(
-            documentId=document_id,
-            body={'requests': requests_list},
-        ).execute()
-
-        doc_url = f"https://docs.google.com/document/d/{document_id}"
-
-        # Load credentials from the JSON key file
-        credentials_gdrive = service_account.Credentials.from_service_account_file(
-            self.CREDENTIALS_JSON,
-            scopes=['https://www.googleapis.com/auth/drive']
-        )
-        drive_service = build('drive', 'v3', credentials=credentials_gdrive)
-        permission_body = {
-            'role': 'writer',
-            'type': 'anyone',
-            'allowFileDiscovery': False,
-        }
-        response = drive_service.permissions().create(
-            fileId=document_id,
-            body=permission_body,
-            fields='id'
-        ).execute()
-
-        print("Google Docs URL:", doc_url)
-        self._out = doc_url
 
     def _create_docx(self):
         document = Document()
@@ -570,7 +512,7 @@ class Export(PostPipeline):
 
         doc_url = f'https://docs.google.com/document/d/{converted_doc_id}/edit'
 
-        self._out = doc_url
+        return doc_url
 
     def output(self):
         return self._out
@@ -596,9 +538,10 @@ class PipelineManager:
         Export
     ]
 
-    def __init__(self, inp: List[str]):
+    def __init__(self, inp: List[str], output_format: str = "by_docx_path"):
         self._in = inp
         self._global_start_time = datetime.now()
+        self._output_format = output_format
 
         self._process()
 
@@ -616,7 +559,11 @@ class PipelineManager:
 
     def _process_post_pipeline(self) -> str:
         for task in self.POST_PIPELINE_TASKS:
-            self._out = task(self._post_pipeline, global_start_time=self._global_start_time).output()
+            self._out = task(
+                self._post_pipeline,
+                global_start_time=self._global_start_time,
+                output_format=self._output_format
+            ).output()
 
         return self._out
 

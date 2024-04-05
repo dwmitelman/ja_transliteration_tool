@@ -8,7 +8,7 @@ import numpy as np
 from datetime import datetime
 import sklearn
 
-RESOURCES_PATH = "resources/align"
+RESOURCES_PATH = "../../ja_transliteration_tool/resources/align"
 
 AR_LETTERS = "ابتثجحخدذرزسشصضطظعغفقكلمنهويءةؤئى"
 EPSILON = "o"
@@ -28,7 +28,7 @@ def get_all_couples(subdir: str):
             with open(f"{root}/{file_name}", "r") as f:
                 lines = f.read().split('\n')
                 coupling.extend([eval(line) for line in lines])
-            print(f"{root}/{file_name}")
+            # print(f"{root}/{file_name}")
 
     return coupling
 
@@ -82,7 +82,7 @@ def split_into_subgroups(words, g_size=20):
     return groups
 
 
-tokenizer = AutoTokenizer.from_pretrained("finetune/hebrew_arabic_transformer-finetuned")
+tokenizer = AutoTokenizer.from_pretrained("dwmit/transliterate")
 
 
 def tokenize_and_align_labels(dataset):
@@ -227,15 +227,14 @@ def print_stats(x):
     print("letters = ", sum([len(subc) for subc in c]))
 
 
-print_stats("train_only/tahafutalfalsafa")
-print_stats("train_only/tahafutaltahafut")
-print_stats("both/hakdamalamishna")
-print_stats("both/imanat")
-print_stats("test_only/alkuzari")
+print_stats("tahafutalfalsafa")
+print_stats("tahafutaltahafut")
+print_stats("hakdamalamishna")
+print_stats("imanat")
+print_stats("alkuzari")
 
-couples_train = get_all_couples("train_only/tahafutalfalsafa") + get_all_couples("train_only/tahafutaltahafutt") + get_all_couples("both/hakdamalamishna") + get_all_couples("both/imanat")
-couples_test = get_all_couples("test_only/alkuzari")
-# couples_both = get_all_couples("both")
+couples_train = get_all_couples("tahafutalfalsafa") + get_all_couples("tahafutaltahafutt") + get_all_couples("hakdamalamishna") + get_all_couples("imanat")
+couples_test = get_all_couples("alkuzari")
 
 words_train = make_words_list(couples_train, keep_apostrophe=False)
 words_test = make_words_list(couples_test, keep_apostrophe=False)
@@ -267,7 +266,7 @@ training_args = TrainingArguments(
 )
 
 metric = evaluate.load("seqeval")
-model = AutoModelForTokenClassification.from_pretrained("finetune/hebrew_arabic_transformer-finetuned-trained", num_labels=34, ignore_mismatched_sizes=True, id2label=id_to_label, label2id=label_to_id)
+model = AutoModelForTokenClassification.from_pretrained("dwmit/transliterate", num_labels=34, ignore_mismatched_sizes=True, id2label=id_to_label, label2id=label_to_id)
 data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
 

@@ -3,7 +3,7 @@ from typing import Optional, Tuple, List, Dict, Set
 from enum import Enum
 from pre_train.aligner.transliterate import Ja2Ar
 
-MAIN_PATH = "~/ja_transliteration_tool/run/borrow_detect/"
+MAIN_PATH = "run/borrow_detect/"
 CORPUS_PATH = MAIN_PATH + "corpora/"
 
 

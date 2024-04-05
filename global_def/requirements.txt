@@ -2,3 +2,4 @@ transformers>=4.36.0
 python-docx==0.8.11
 pyarabic==0.6.15
 google-api-python-client
+tabulate

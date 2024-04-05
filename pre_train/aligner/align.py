@@ -2,9 +2,9 @@ import itertools
 from tabulate import tabulate
 from typing import List
 
-from ja_transliteration_tool.pre_train.generic.const import *
-from ja_transliteration_tool.pre_train.generic.word_clean import Ar, Ja
-from ja_transliteration_tool.pre_train.aligner.transliterate import Ja2Ar, Ar2Ja
+from pre_train.generic.const import *
+from pre_train.generic.word_clean import Ar, Ja
+from pre_train.aligner.transliterate import Ja2Ar, Ar2Ja
 
 
 class Comparator(object):

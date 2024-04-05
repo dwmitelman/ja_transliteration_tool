@@ -374,7 +374,7 @@ class SpellingMistakeDetector(InPipeline):
 
 
 class Export(PostPipeline):
-    CREDENTIALS_JSON = "~/ja_transliteration_tool/global_def/docx-read-7b56daaf11c4.json"
+    CREDENTIALS_JSON = "global_def/docx-read-7b56daaf11c4.json"
     LEGAL_OUTPUT_FORMATS = [
         "by_docx_path",
         "by_list_str"

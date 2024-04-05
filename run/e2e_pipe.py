@@ -395,7 +395,7 @@ class Export(PostPipeline):
 
         if self._output_format == "by_docx_path":
             self._out = self._create_docx()
-        if self._output_format == "by_list_str":
+        elif self._output_format == "by_list_str":
             self._out = self._create_list()
         else:
             raise KeyError(f"output_format {self._output_format} not legal, options: {self.LEGAL_OUTPUT_FORMATS}")
